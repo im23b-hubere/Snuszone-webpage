@@ -6,19 +6,36 @@ import { Mail, Instagram, ArrowRight, CheckCircle, Star, Video } from 'lucide-re
 
 export default function Home() {
   const [email, setEmail] = useState('')
-  const [isSubmitted, setIsSubmitted] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
     
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    
-    setIsSubmitted(true)
-    setIsLoading(false)
-    setEmail('')
+    try {
+      const response = await fetch('/api/subscribe', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        // Erfolgreich - zur Success-Seite weiterleiten
+        window.location.href = '/success'
+      } else {
+        // Fehler anzeigen
+        alert(data.error || 'Ein Fehler ist aufgetreten. Bitte versuche es später erneut.')
+        setIsLoading(false)
+      }
+    } catch (error) {
+      console.error('Fehler beim Senden der E-Mail:', error)
+      alert('Ein Fehler ist aufgetreten. Bitte versuche es später erneut.')
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -68,49 +85,33 @@ export default function Home() {
               transition={{ duration: 0.8, delay: 0.4 }}
               className="max-w-md mx-auto mb-12"
             >
-              {!isSubmitted ? (
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <div className="relative">
-                    <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 text-primary-400 w-5 h-5" />
-                    <input
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="Deine E-Mail Adresse"
-                      required
-                      className="input-field pl-12 pr-4"
-                    />
-                  </div>
-                  <button
-                    type="submit"
-                    disabled={isLoading}
-                    className="btn-primary w-full flex items-center justify-center space-x-2"
-                  >
-                    {isLoading ? (
-                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                    ) : (
-                      <>
-                        <span>Exklusiven Zugang sichern</span>
-                        <ArrowRight className="w-5 h-5" />
-                      </>
-                    )}
-                  </button>
-                </form>
-              ) : (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  className="card-neumorphism text-center"
-                >
-                  <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
-                  <h3 className="text-xl font-bold text-primary-800 mb-2">
-                    Willkommen bei SnusZone!
-                  </h3>
-                  <p className="text-primary-600">
-                    Du bist jetzt auf unserer exklusiven Liste. Wir informieren dich sofort, wenn wir live gehen!
-                  </p>
-                </motion.div>
-              )}
+                           <form onSubmit={handleSubmit} className="space-y-4">
+               <div className="relative">
+                 <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 text-primary-400 w-5 h-5" />
+                 <input
+                   type="email"
+                   value={email}
+                   onChange={(e) => setEmail(e.target.value)}
+                   placeholder="Deine E-Mail Adresse"
+                   required
+                   className="input-field pl-12 pr-4"
+                 />
+               </div>
+               <button
+                 type="submit"
+                 disabled={isLoading}
+                 className="btn-primary w-full flex items-center justify-center space-x-2"
+               >
+                 {isLoading ? (
+                   <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                 ) : (
+                   <>
+                     <span>Exklusiven Zugang sichern</span>
+                     <ArrowRight className="w-5 h-5" />
+                   </>
+                 )}
+               </button>
+             </form>
             </motion.div>
 
             {/* Benefits */}
