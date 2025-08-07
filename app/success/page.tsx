@@ -59,7 +59,7 @@ export default function SuccessPage() {
                   Bestätigungs-E-Mail
                 </h3>
                 <p className="text-primary-600 text-sm">
-                  Du erhältst in den nächsten Minuten eine Bestätigungs-E-Mail
+                  Du erhältst in den nächsten Minuten eine Bestätigungs-E-Mail mit deinem exklusiven Rabattcode
                 </p>
               </div>
               <div className="text-center">
@@ -99,7 +99,9 @@ export default function SuccessPage() {
             
             <div className="flex justify-center space-x-8">
               <motion.a
-                href="#"
+                href="https://instagram.com/snuszone.official"
+                target="_blank"
+                rel="noopener noreferrer"
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
                 className="flex items-center space-x-3 btn-secondary"
@@ -109,7 +111,9 @@ export default function SuccessPage() {
               </motion.a>
               
               <motion.a
-                href="#"
+                href="https://tiktok.com/@snuszone.official"
+                target="_blank"
+                rel="noopener noreferrer"
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
                 className="flex items-center space-x-3 btn-secondary"
@@ -125,10 +129,26 @@ export default function SuccessPage() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.8 }}
+            className="mb-8"
           >
             <Link href="/" className="btn-primary inline-flex items-center space-x-2">
               <ArrowLeft className="w-5 h-5" />
               <span>Zurück zur Startseite</span>
+            </Link>
+          </motion.div>
+
+          {/* Legal Links */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 1.0 }}
+            className="flex justify-center space-x-6 text-sm text-primary-600"
+          >
+            <Link href="/impressum" className="hover:text-primary-800 transition-colors">
+              Impressum
+            </Link>
+            <Link href="/datenschutz" className="hover:text-primary-800 transition-colors">
+              Datenschutz
             </Link>
           </motion.div>
         </div>

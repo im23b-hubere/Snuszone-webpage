@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Mail, Instagram, ArrowRight, CheckCircle, Star, Video } from 'lucide-react'
+import Link from 'next/link'
 
 export default function Home() {
   const [email, setEmail] = useState('')
@@ -75,6 +76,8 @@ export default function Home() {
               <p className="text-lg md:text-xl text-primary-600 max-w-3xl mx-auto leading-relaxed">
                 Sichere dir exklusiven Zugang zu Premium Snus Produkten zu unschlagbaren Preisen. 
                 Melde dich jetzt an und erhalte als Erster Bescheid, wenn unser Shop online geht!
+                <br /><br />
+                <span className="font-semibold text-accent-600">🎉 Bonus: Du bekommst einen exklusiven Rabattcode per E-Mail!</span>
               </p>
             </motion.div>
 
@@ -134,8 +137,8 @@ export default function Home() {
                 },
                 {
                   icon: Mail,
-                  title: "Früher Zugang",
-                  description: "Erhalte 24h vor dem offiziellen Launch Zugang zum Shop"
+                  title: "Rabattcode per E-Mail",
+                  description: "Erhalte einen exklusiven Rabattcode für deinen ersten Einkauf"
                 }
               ].map((benefit, index) => (
                 <motion.div
@@ -178,7 +181,9 @@ export default function Home() {
             
             <div className="flex justify-center space-x-8">
               <motion.a
-                href="#"
+                href="https://instagram.com/snuszone.official"
+                target="_blank"
+                rel="noopener noreferrer"
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
                 className="flex items-center space-x-3 btn-secondary"
@@ -187,15 +192,17 @@ export default function Home() {
                 <span>Instagram</span>
               </motion.a>
               
-                             <motion.a
-                 href="#"
-                 whileHover={{ scale: 1.1 }}
-                 whileTap={{ scale: 0.95 }}
-                 className="flex items-center space-x-3 btn-secondary"
-               >
-                 <Video className="w-6 h-6" />
-                 <span>TikTok</span>
-               </motion.a>
+              <motion.a
+                href="https://tiktok.com/@snuszone.official"
+                target="_blank"
+                rel="noopener noreferrer"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                className="flex items-center space-x-3 btn-secondary"
+              >
+                <Video className="w-6 h-6" />
+                <span>TikTok</span>
+              </motion.a>
             </div>
           </motion.div>
         </div>
@@ -208,11 +215,19 @@ export default function Home() {
           <p className="text-primary-200 mb-6">
             Premium Snus für echte Kenner
           </p>
-          <div className="text-sm text-primary-300">
+          <div className="text-sm text-primary-300 mb-4">
             <p>&copy; 2024 SnusZone. Alle Rechte vorbehalten.</p>
             <p className="mt-2">
               Nur für Personen ab 18 Jahren. Konsumiere verantwortungsvoll.
             </p>
+          </div>
+          <div className="flex justify-center space-x-6 text-sm">
+            <Link href="/impressum" className="text-primary-300 hover:text-white transition-colors">
+              Impressum
+            </Link>
+            <Link href="/datenschutz" className="text-primary-300 hover:text-white transition-colors">
+              Datenschutz
+            </Link>
           </div>
         </div>
       </footer>

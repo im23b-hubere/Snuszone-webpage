@@ -1,62 +1,84 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-// In einer echten Anwendung würdest du hier einen E-Mail Service wie Mailchimp, ConvertKit oder Resend verwenden
-// Für jetzt speichern wir die E-Mails in einer JSON Datei (nur für Demo-Zwecke)
-
 export async function POST(request: NextRequest) {
   try {
+    console.log('API Route wurde aufgerufen!')
     const { email } = await request.json()
+    console.log('E-Mail erhalten:', email)
 
     // E-Mail Validierung
     if (!email || !email.includes('@')) {
+      console.log('E-Mail Validierung fehlgeschlagen')
       return NextResponse.json(
         { error: 'Bitte gib eine gültige E-Mail-Adresse ein.' },
         { status: 400 }
       )
     }
 
-    // Hier würdest du normalerweise die E-Mail an deinen Service senden
-    // Beispiel für verschiedene Services:
+    // MailerLite Integration
+    console.log('Environment Variables:')
+    console.log('API Key vorhanden:', !!process.env.MAILERLITE_API_KEY)
+    console.log('Group ID vorhanden:', !!process.env.MAILERLITE_GROUP_ID)
+    
+    if (process.env.MAILERLITE_API_KEY && process.env.MAILERLITE_GROUP_ID) {
+      console.log('Sende E-Mail an MailerLite...')
+      
+      try {
+        // Subscriber zur Gruppe hinzufügen
+        const response = await fetch(`https://connect.mailerlite.com/api/subscribers`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${process.env.MAILERLITE_API_KEY}`,
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({
+            email: email,
+            groups: [process.env.MAILERLITE_GROUP_ID],
+            status: 'active'
+          }),
+        })
 
-    // Mailchimp:
-    // const response = await fetch('https://us1.api.mailchimp.com/3.0/lists/YOUR_LIST_ID/members', {
-    //   method: 'POST',
-    //   headers: {
-    //     'Authorization': `Bearer ${process.env.MAILCHIMP_API_KEY}`,
-    //     'Content-Type': 'application/json',
-    //   },
-    //   body: JSON.stringify({
-    //     email_address: email,
-    //     status: 'subscribed',
-    //   }),
-    // })
-
-    // ConvertKit:
-    // const response = await fetch(`https://api.convertkit.com/v3/forms/YOUR_FORM_ID/subscribe`, {
-    //   method: 'POST',
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //   },
-    //   body: JSON.stringify({
-    //     api_key: process.env.CONVERTKIT_API_KEY,
-    //     email: email,
-    //   }),
-    // })
-
-    // Resend (für E-Mail-Benachrichtigungen):
-    // const response = await fetch('https://api.resend.com/emails', {
-    //   method: 'POST',
-    //   headers: {
-    //     'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
-    //     'Content-Type': 'application/json',
-    //   },
-    //   body: JSON.stringify({
-    //     from: 'noreply@snuszone.com',
-    //     to: email,
-    //     subject: 'Willkommen bei SnusZone!',
-    //     html: '<h1>Willkommen bei SnusZone!</h1><p>Du bist jetzt auf unserer exklusiven Liste.</p>',
-    //   }),
-    // })
+        console.log('MailerLite Response Status:', response.status)
+        
+        const responseText = await response.text()
+        console.log('MailerLite Response Text:', responseText)
+        
+        if (!response.ok) {
+          console.error('MailerLite API Error:', responseText)
+          return NextResponse.json(
+            { error: `Fehler beim Hinzufügen zur E-Mail-Liste. Status: ${response.status}` },
+            { status: 500 }
+          )
+        }
+        
+        // Versuche JSON zu parsen, falls es JSON ist
+        let responseData
+        try {
+          responseData = JSON.parse(responseText)
+          console.log('MailerLite Response Data:', responseData)
+        } catch (e) {
+          console.log('Response ist kein JSON:', responseText)
+        }
+        
+        console.log('E-Mail erfolgreich an MailerLite gesendet!')
+        console.log('Hinweis: Bestätigungs-E-Mail wird über MailerLite Automation gesendet')
+        
+      } catch (fetchError) {
+        console.error('Fetch Error:', fetchError)
+        return NextResponse.json(
+          { error: 'Netzwerkfehler beim Verbinden mit MailerLite.' },
+          { status: 500 }
+        )
+      }
+    } else {
+      console.log('Environment Variables fehlen!')
+      console.log('Benötigte Variablen:')
+      console.log('- MAILERLITE_API_KEY')
+      console.log('- MAILERLITE_GROUP_ID')
+      console.log('Verfügbare Environment Variables:')
+      console.log(Object.keys(process.env).filter(key => key.includes('MAILERLITE')))
+    }
 
     // Für Demo-Zwecke: Log der E-Mail (in Produktion entfernen)
     console.log('Neue E-Mail-Anmeldung:', email)
