@@ -16,8 +16,8 @@ export async function POST(request: NextRequest) {
     
     // Sende Willkommens-E-Mail mit Rabattcode
     const emailResult = await resend.emails.send({
-      from: 'SnusZone <onboarding@resend.dev>',
-      to: ['snuszone.official@gmail.com'], // Temporär nur an Ihre E-Mail
+      from: 'SnusZone <noreply@snuszone-official.ch>',
+      to: [email], // Jetzt an die eingegebene E-Mail-Adresse
       subject: '🎉 Willkommen bei SnusZone - Dein exklusiver Rabattcode!',
       html: generateWelcomeEmailHTML(discountCode),
       text: generateWelcomeEmailText(discountCode),
