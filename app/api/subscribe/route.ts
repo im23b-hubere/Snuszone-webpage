@@ -1,103 +1,188 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { Resend } from 'resend'
+
+const resend = new Resend('re_fZ66GYHG_KjqjPKsqT2HmVKYLhbBaaxs5')
 
 export async function POST(request: NextRequest) {
   try {
-    console.log('API Route wurde aufgerufen!')
     const { email } = await request.json()
-    console.log('E-Mail erhalten:', email)
 
-    // E-Mail Validierung
-    if (!email || !email.includes('@')) {
-      console.log('E-Mail Validierung fehlgeschlagen')
-      return NextResponse.json(
-        { error: 'Bitte gib eine gültige E-Mail-Adresse ein.' },
-        { status: 400 }
-      )
+    if (!email) {
+      return NextResponse.json({ error: 'E-Mail ist erforderlich' }, { status: 400 })
     }
 
-    // MailerLite Integration
-    console.log('Environment Variables:')
-    console.log('API Key vorhanden:', !!process.env.MAILERLITE_API_KEY)
-    console.log('Group ID vorhanden:', !!process.env.MAILERLITE_GROUP_ID)
+    // Fester Rabattcode
+    const discountCode = 'WELCOME15'
     
-    if (process.env.MAILERLITE_API_KEY && process.env.MAILERLITE_GROUP_ID) {
-      console.log('Sende E-Mail an MailerLite...')
-      
-      try {
-        // Subscriber zur Gruppe hinzufügen
-        const response = await fetch(`https://connect.mailerlite.com/api/subscribers`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${process.env.MAILERLITE_API_KEY}`,
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-          },
-          body: JSON.stringify({
-            email: email,
-            groups: [process.env.MAILERLITE_GROUP_ID],
-            status: 'active'
-          }),
-        })
+    // Sende Willkommens-E-Mail mit Rabattcode
+    const emailResult = await resend.emails.send({
+      from: 'SnusZone <onboarding@resend.dev>',
+      to: ['snuszone.official@gmail.com'], // Temporär nur an Ihre E-Mail
+      subject: '🎉 Willkommen bei SnusZone - Dein exklusiver Rabattcode!',
+      html: generateWelcomeEmailHTML(discountCode),
+      text: generateWelcomeEmailText(discountCode),
+    })
 
-        console.log('MailerLite Response Status:', response.status)
-        
-        const responseText = await response.text()
-        console.log('MailerLite Response Text:', responseText)
-        
-        if (!response.ok) {
-          console.error('MailerLite API Error:', responseText)
-          return NextResponse.json(
-            { error: `Fehler beim Hinzufügen zur E-Mail-Liste. Status: ${response.status}` },
-            { status: 500 }
-          )
-        }
-        
-        // Versuche JSON zu parsen, falls es JSON ist
-        let responseData
-        try {
-          responseData = JSON.parse(responseText)
-          console.log('MailerLite Response Data:', responseData)
-        } catch (e) {
-          console.log('Response ist kein JSON:', responseText)
-        }
-        
-        console.log('E-Mail erfolgreich an MailerLite gesendet!')
-        console.log('Hinweis: Bestätigungs-E-Mail wird über MailerLite Automation gesendet')
-        
-      } catch (fetchError) {
-        console.error('Fetch Error:', fetchError)
-        return NextResponse.json(
-          { error: 'Netzwerkfehler beim Verbinden mit MailerLite.' },
-          { status: 500 }
-        )
-      }
-    } else {
-      console.log('Environment Variables fehlen!')
-      console.log('Benötigte Variablen:')
-      console.log('- MAILERLITE_API_KEY')
-      console.log('- MAILERLITE_GROUP_ID')
-      console.log('Verfügbare Environment Variables:')
-      console.log(Object.keys(process.env).filter(key => key.includes('MAILERLITE')))
+    if (emailResult.error) {
+      console.error('Fehler beim Senden der E-Mail:', emailResult.error)
+      return NextResponse.json({ error: 'Fehler beim Senden der E-Mail' }, { status: 500 })
     }
 
-    // Für Demo-Zwecke: Log der E-Mail (in Produktion entfernen)
-    console.log('Neue E-Mail-Anmeldung:', email)
-
-    // Erfolgreiche Antwort
-    return NextResponse.json(
-      { 
-        success: true, 
-        message: 'E-Mail erfolgreich hinzugefügt!',
-        email: email 
-      },
-      { status: 200 }
-    )
+    console.log('Willkommens-E-Mail erfolgreich gesendet:', email)
+    return NextResponse.json({ success: true, discountCode })
 
   } catch (error) {
-    console.error('Fehler beim Hinzufügen der E-Mail:', error)
-    return NextResponse.json(
-      { error: 'Ein Fehler ist aufgetreten. Bitte versuche es später erneut.' },
-      { status: 500 }
-    )
+    console.error('Server-Fehler:', error)
+    return NextResponse.json({ error: 'Interner Server-Fehler' }, { status: 500 })
   }
+}
+
+// Funktion nicht mehr benötigt - fester Code verwendet
+
+function generateWelcomeEmailHTML(discountCode: string): string {
+  return `
+    <!DOCTYPE html>
+    <html lang="de">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Willkommen bei SnusZone</title>
+      <style>
+        body {
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+          line-height: 1.6;
+          color: #333;
+          max-width: 600px;
+          margin: 0 auto;
+          padding: 20px;
+          background-color: #f8f9fa;
+        }
+        .container {
+          background: white;
+          border-radius: 12px;
+          padding: 40px;
+          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+          text-align: center;
+          margin-bottom: 30px;
+        }
+        .logo {
+          font-size: 2.5rem;
+          font-weight: 900;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          margin-bottom: 10px;
+        }
+        .discount-box {
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          color: white;
+          padding: 30px;
+          border-radius: 12px;
+          text-align: center;
+          margin: 30px 0;
+        }
+        .discount-code {
+          font-size: 2rem;
+          font-weight: bold;
+          letter-spacing: 2px;
+          background: rgba(255, 255, 255, 0.2);
+          padding: 15px;
+          border-radius: 8px;
+          margin: 15px 0;
+          display: inline-block;
+        }
+        .footer {
+          text-align: center;
+          margin-top: 40px;
+          padding-top: 20px;
+          border-top: 1px solid #eee;
+          color: #666;
+          font-size: 0.9rem;
+        }
+        .social-links {
+          margin: 20px 0;
+        }
+        .social-links a {
+          display: inline-block;
+          margin: 0 10px;
+          color: #667eea;
+          text-decoration: none;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <div class="logo">SnusZone</div>
+          <h1>🎉 Willkommen bei SnusZone!</h1>
+        </div>
+        
+        <p>Hallo!</p>
+        
+        <p>Vielen Dank, dass du dich für SnusZone angemeldet hast! Du bist jetzt Teil unserer exklusiven Community und wirst als Erster erfahren, wenn unser Premium Snus Shop live geht.</p>
+        
+        <div class="discount-box">
+          <h2>🎁 Dein exklusiver Rabattcode</h2>
+          <p>Als Willkommensgeschenk bekommst du einen exklusiven Rabattcode für deinen ersten Einkauf:</p>
+          <div class="discount-code">${discountCode}</div>
+          <p><strong>15% Rabatt auf deine erste Bestellung!</strong></p>
+        </div>
+        
+        <h3>Was dich erwartet:</h3>
+        <ul>
+          <li>✅ Exklusiver Zugang zu Premium Snus Produkten</li>
+          <li>✅ Unschlagbare Preise und regelmäßige Angebote</li>
+          <li>✅ Schneller und diskreter Versand</li>
+          <li>✅ Nur die beste Qualität für echte Kenner</li>
+        </ul>
+        
+        <p>Wir arbeiten hart daran, dir die beste Auswahl an Premium Snus Produkten zu bieten. Sobald unser Shop online ist, wirst du sofort eine E-Mail erhalten!</p>
+        
+        <div class="social-links">
+          <p>Folge uns für Updates und exklusive Inhalte:</p>
+          <a href="https://instagram.com/snuszone.official">📸 Instagram</a>
+          <a href="https://tiktok.com/@snuszone.official">🎵 TikTok</a>
+          <a href="https://www.snuszone-official.ch">🌐 Website</a>
+        </div>
+        
+        <div class="footer">
+          <p><strong>SnusZone</strong> - Premium Snus für echte Kenner</p>
+          <p>Nur für Personen ab 18 Jahren. Konsumiere verantwortungsvoll.</p>
+          <p>Du kannst dich jederzeit <a href="#" style="color: #667eea;">abmelden</a>, wenn du keine weiteren E-Mails erhalten möchtest.</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `
+}
+
+function generateWelcomeEmailText(discountCode: string): string {
+  return `
+Willkommen bei SnusZone! 🎉
+
+Vielen Dank, dass du dich für SnusZone angemeldet hast! Du bist jetzt Teil unserer exklusiven Community und wirst als Erster erfahren, wenn unser Premium Snus Shop live geht.
+
+🎁 DEIN EXKLUSIVER RABATTCODE:
+${discountCode}
+
+Du erhältst 15% Rabatt auf deine erste Bestellung!
+
+Was dich erwartet:
+✅ Exklusiver Zugang zu Premium Snus Produkten
+✅ Unschlagbare Preise und regelmäßige Angebote
+✅ Schneller und diskreter Versand
+✅ Nur die beste Qualität für echte Kenner
+
+Wir arbeiten hart daran, dir die beste Auswahl an Premium Snus Produkten zu bieten. Sobald unser Shop online ist, wirst du sofort eine E-Mail erhalten!
+
+Folge uns für Updates:
+📸 Instagram: https://instagram.com/snuszone.official
+🎵 TikTok: https://tiktok.com/@snuszone.official
+🌐 Website: https://www.snuszone-official.ch
+
+SnusZone - Premium Snus für echte Kenner
+Nur für Personen ab 18 Jahren. Konsumiere verantwortungsvoll.
+  `
 } 

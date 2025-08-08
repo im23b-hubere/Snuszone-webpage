@@ -56,10 +56,10 @@ export default function SuccessPage() {
               <div className="text-center">
                 <Mail className="w-12 h-12 text-accent-500 mx-auto mb-4" />
                 <h3 className="text-lg font-semibold text-primary-800 mb-2">
-                  Bestätigungs-E-Mail
+                  Willkommens-E-Mail
                 </h3>
                 <p className="text-primary-600 text-sm">
-                  Du erhältst in den nächsten Minuten eine Bestätigungs-E-Mail mit deinem exklusiven Rabattcode
+                  Du erhältst in den nächsten Minuten eine Willkommens-E-Mail mit deinem exklusiven Rabattcode
                 </p>
               </div>
               <div className="text-center">
