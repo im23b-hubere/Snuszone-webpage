@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Fester Rabattcode
-    const discountCode = 'WELCOME15'
+    const discountCode = 'WELCOME10'
     
     // Sende Willkommens-E-Mail mit Rabattcode
     const emailResult = await resend.emails.send({
@@ -70,13 +70,11 @@ function generateWelcomeEmailHTML(discountCode: string): string {
         .logo {
           font-size: 2.5rem;
           font-weight: 900;
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
+          color: #D72638;
           margin-bottom: 10px;
         }
         .discount-box {
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          background: #D72638;
           color: white;
           padding: 30px;
           border-radius: 12px;
@@ -107,7 +105,7 @@ function generateWelcomeEmailHTML(discountCode: string): string {
         .social-links a {
           display: inline-block;
           margin: 0 10px;
-          color: #667eea;
+          color: #D72638;
           text-decoration: none;
         }
       </style>
@@ -127,7 +125,7 @@ function generateWelcomeEmailHTML(discountCode: string): string {
           <h2>🎁 Dein exklusiver Rabattcode</h2>
           <p>Als Willkommensgeschenk bekommst du einen exklusiven Rabattcode für deinen ersten Einkauf:</p>
           <div class="discount-code">${discountCode}</div>
-          <p><strong>15% Rabatt auf deine erste Bestellung!</strong></p>
+          <p><strong>10% Rabatt auf deine erste Bestellung!</strong></p>
         </div>
         
         <h3>Was dich erwartet:</h3>
@@ -150,7 +148,7 @@ function generateWelcomeEmailHTML(discountCode: string): string {
         <div class="footer">
           <p><strong>SnusZone</strong> - Premium Snus für echte Kenner</p>
           <p>Nur für Personen ab 18 Jahren. Konsumiere verantwortungsvoll.</p>
-          <p>Du kannst dich jederzeit <a href="#" style="color: #667eea;">abmelden</a>, wenn du keine weiteren E-Mails erhalten möchtest.</p>
+          <p>Du kannst dich jederzeit <a href="#" style="color: #D72638;">abmelden</a>, wenn du keine weiteren E-Mails erhalten möchtest.</p>
         </div>
       </div>
     </body>
@@ -167,7 +165,7 @@ Vielen Dank, dass du dich für SnusZone angemeldet hast! Du bist jetzt Teil unse
 🎁 DEIN EXKLUSIVER RABATTCODE:
 ${discountCode}
 
-Du erhältst 15% Rabatt auf deine erste Bestellung!
+Du erhältst 10% Rabatt auf deine erste Bestellung!
 
 Was dich erwartet:
 ✅ Exklusiver Zugang zu Premium Snus Produkten
